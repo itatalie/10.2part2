@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Union
 
+
 def format_date(date_str: str) -> Union[str, str]:
     """
     Преобразует дату из ISO формата в читаемый вид.
