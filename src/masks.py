@@ -1,5 +1,6 @@
 from typing import Union
 
+
 def obfuscate_card_number(card_num: str) -> Union[str, str]:
     """
     Маскирует номер карты.
@@ -15,7 +16,6 @@ def obfuscate_card_number(card_num: str) -> Union[str, str]:
 def obfuscate_account_number(account_num: str) -> Union[str, str]:
     """
     Маскирует номер счета.
-
     :param account_num: Номер счета.
     :return: Маскированный номер счета или сообщение об ошибке.
     """
