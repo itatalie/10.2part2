@@ -2,7 +2,11 @@ import pytest
 from unittest.mock import patch
 from src.main import main
 
-@patch("builtins.input", side_effect=["2", "data/transactions.csv", "EXECUTED", "нет", "нет", "нет"])
+
+@patch(
+    "builtins.input",
+    side_effect=["2", "data/transactions.csv", "EXECUTED", "нет", "нет", "нет"],
+)
 @patch("src.readers.read_csv_transactions")
 def test_main(mock_read_csv, mock_input):
     mock_read_csv.return_value = [

@@ -1,5 +1,6 @@
 from typing import List, Dict
 
+
 def filter_operations_by_status(operations: List[Dict], status: str) -> List[Dict]:
     """
     Фильтрует операции по статусу.
@@ -8,22 +9,24 @@ def filter_operations_by_status(operations: List[Dict], status: str) -> List[Dic
     :return: Отфильтрованный список операций.
     """
     return [
-        op for op in operations
-        if isinstance(op.get("state"), str) and op.get("state", "").upper() == status.upper()
+        op
+        for op in operations
+        if isinstance(op.get("state"), str)
+        and op.get("state", "").upper() == status.upper()
     ]
 
-def reorder_operations_by_date(operations: List[Dict], descending: bool = False) -> List[Dict]:
+
+def reorder_operations_by_date(
+    operations: List[Dict], descending: bool = False
+) -> List[Dict]:
     """
     Сортирует операции по дате.
     :param operations: Список операций.
     :param descending: True, если сортировка по убыванию.
     :return: Отсортированный список операций.
     """
-    return sorted(
-        operations,
-        key=lambda x: x.get("date", ""),
-        reverse=descending
-    )
+    return sorted(operations, key=lambda x: x.get("date", ""), reverse=descending)
+
 
 def filter_rub_transactions(operations: List[Dict]) -> List[Dict]:
     """
@@ -32,6 +35,7 @@ def filter_rub_transactions(operations: List[Dict]) -> List[Dict]:
     :return: Отфильтрованный список операций.
     """
     return [
-        op for op in operations
+        op
+        for op in operations
         if op.get("operationAmount", {}).get("currency", {}).get("code") == "RUB"
     ]

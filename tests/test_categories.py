@@ -1,5 +1,6 @@
 from src.categories import count_transaction_categories
 
+
 def test_count_transaction_categories():
     transactions = [
         {"id": 1, "description": "Перевод организации"},

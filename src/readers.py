@@ -18,6 +18,7 @@ def read_excel_transactions(file_path: str) -> List[Dict]:
     except Exception as e:
         raise ValueError(f"Ошибка при чтении Excel-файла: {str(e)}")
 
+
 def read_csv_transactions(file_path: str) -> List[Dict]:
     """
     Считывает финансовые операции из CSV-файла и возвращает их как список словарей.
@@ -30,8 +31,15 @@ def read_csv_transactions(file_path: str) -> List[Dict]:
 
         # Присвоение названий столбцам
         df.columns = [
-            "id", "state", "date", "amount", "currency_name",
-            "currency_code", "from", "to", "description"
+            "id",
+            "state",
+            "date",
+            "amount",
+            "currency_name",
+            "currency_code",
+            "from",
+            "to",
+            "description",
         ]
 
         # Преобразование DataFrame в список словарей

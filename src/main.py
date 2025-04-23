@@ -1,5 +1,9 @@
 from src.readers import read_csv_transactions, read_excel_transactions
-from src.processing import filter_operations_by_status, reorder_operations_by_date, filter_rub_transactions
+from src.processing import (
+    filter_operations_by_status,
+    reorder_operations_by_date,
+    filter_rub_transactions,
+)
 from src.search import search_transactions_by_description
 from src.categories import count_transaction_categories
 from typing import Dict
@@ -9,7 +13,11 @@ def print_transaction(transaction: Dict):
     date = transaction.get("date", "Дата не указана")
     description = transaction.get("description", "Описание отсутствует")
     amount = transaction.get("operationAmount", {}).get("amount", "Сумма не указана")
-    currency = transaction.get("operationAmount", {}).get("currency", {}).get("name", "Валюта не указана")
+    currency = (
+        transaction.get("operationAmount", {})
+        .get("currency", {})
+        .get("name", "Валюта не указана")
+    )
     from_account = transaction.get("from", "Источник не указан")
     to_account = transaction.get("to", "Получатель не указан")
 
@@ -45,9 +53,13 @@ def main():
     # Сортировка по дате
     sort_choice = input("Отсортировать операции по дате? (да/нет): ").lower()
     if sort_choice == "да":
-        order = input("По возрастанию или по убыванию? (возрастание/убывание): ").lower()
+        order = input(
+            "По возрастанию или по убыванию? (возрастание/убывание): "
+        ).lower()
         descending = order == "убывание"
-        filtered_transactions = reorder_operations_by_date(filtered_transactions, descending=descending)
+        filtered_transactions = reorder_operations_by_date(
+            filtered_transactions, descending=descending
+        )
 
     # Фильтрация рублевых транзакций
     rub_only = input("Выводить только рублевые транзакции? (да/нет): ").lower()
@@ -55,10 +67,14 @@ def main():
         filtered_transactions = filter_rub_transactions(filtered_transactions)
 
     # Поиск по описанию
-    search_choice = input("Фильтровать список транзакций по определенному слову в описании? (да/нет): ").lower()
+    search_choice = input(
+        "Фильтровать список транзакций по определенному слову в описании? (да/нет): "
+    ).lower()
     if search_choice == "да":
         search_string = input("Введите слово для поиска: ")
-        filtered_transactions = search_transactions_by_description(filtered_transactions, search_string)
+        filtered_transactions = search_transactions_by_description(
+            filtered_transactions, search_string
+        )
 
     # Подсчет категорий
     category_counts = count_transaction_categories(filtered_transactions)

@@ -18,7 +18,8 @@ def log(filename: str = None) -> Callable:
                 # Логирование начала выполнения
                 log_message = f"Вызов функции {func.__name__} с аргументами: args={args}, kwargs={kwargs}\n"
                 if filename:
-                    with open(filename, "a", encoding="utf-8") as f:                        f.write(log_message)
+                    with open(filename, "a", encoding="utf-8") as f:
+                        f.write(log_message)
                 else:
                     print(log_message, end="", file=sys.stdout)
 
@@ -26,9 +27,12 @@ def log(filename: str = None) -> Callable:
                 result = func(*args, **kwargs)
 
                 # Логирование успешного завершения
-                log_message = f"Функция {func.__name__} успешно завершена. Результат: {result}\n"
+                log_message = (
+                    f"Функция {func.__name__} успешно завершена. Результат: {result}\n"
+                )
                 if filename:
-                    with open(filename, "a", encoding="utf-8") as f:                        f.write(log_message)
+                    with open(filename, "a", encoding="utf-8") as f:
+                        f.write(log_message)
                 else:
                     print(log_message, end="", file=sys.stdout)
 
@@ -37,7 +41,8 @@ def log(filename: str = None) -> Callable:
                 # Логирование ошибки
                 error_message = f"Ошибка в функции {func.__name__}: {type(e).__name__}. Входные данные: args={args}, kwargs={kwargs}\n"
                 if filename:
-                    with open(filename, "a", encoding="utf-8") as f:                        f.write(error_message)
+                    with open(filename, "a", encoding="utf-8") as f:
+                        f.write(error_message)
                 else:
                     print(error_message, end="", file=sys.stderr)
                 raise
