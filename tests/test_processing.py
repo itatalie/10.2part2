@@ -1,29 +1,44 @@
-import pytest
-from src.processing import filter_operations_by_status, reorder_operations_by_date
+from unittest.mock import patch
+from src.processing import convert_currency
+from dotenv import load_dotenv
 
+# Загружаем переменные окружения из .env
+load_dotenv()
 
-@pytest.fixture
-def sample_operations():
-    return [
-        {"id": 1, "state": "EXECUTED", "date": "2023-01-01"},
-        {"id": 2, "state": "PENDING", "date": "2023-01-02"},
-        {"id": 3, "state": "EXECUTED", "date": "2023-01-03"},
-    ]
+@patch("requests.get")
+def test_convert_currency(mock_get):
+    """
+    Тестирует функцию конвертации валюты с моком внешнего API.
+    """
+    # Мокаем ответ от API
+    mock_response = {
+        "success": True,
+        "query": {"from": "USD", "to": "RUB", "amount": 100},
+        "result": 9000.0,
+    }
+    mock_get.return_value.json.return_value = mock_response
 
+    # Вызываем функцию конвертации
+    result = convert_currency(100, "USD", "RUB")
 
-@pytest.mark.parametrize(
-    "status, expected_ids", [("EXECUTED", [1, 3]), ("PENDING", [2]), ("CANCELED", [])]
-)
-def test_filter_operations_by_status(sample_operations, status, expected_ids):
-    result = filter_operations_by_status(sample_operations, status)
-    ids = [op["id"] for op in result]
-    assert ids == expected_ids
+    # Проверяем результат
+    assert result == 9000.0
 
+@patch("requests.get")
+def test_convert_currency_same_currency(mock_get):
+    """
+    Тестирует функцию конвертации валюты, когда исходная и целевая валюты совпадают.
+    """
+    result = convert_currency(100, "RUB", "RUB")
+    assert result == 100
 
-@pytest.mark.parametrize(
-    "descending, expected_ids", [(True, [3, 2, 1]), (False, [1, 2, 3])]
-)
-def test_reorder_operations_by_date(sample_operations, descending, expected_ids):
-    result = reorder_operations_by_date(sample_operations, descending)
-    ids = [op["id"] for op in result]
-    assert ids == expected_ids
+@patch("requests.get")
+def test_convert_currency_api_error(mock_get):
+    """
+    Тестирует обработку ошибок при вызове внешнего API.
+    """
+    mock_get.side_effect = Exception("API недоступно")
+    try:
+        convert_currency(100, "USD", "RUB")
+    except ValueError as e:
+        assert str(e) == "Ошибка при конвертации валюты: API недоступно"
