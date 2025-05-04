@@ -1,41 +1,29 @@
-from typing import List, Dict
+import re
+from collections import Counter
 
 
-def filter_operations_by_status(operations: List[Dict], status: str) -> List[Dict]:
+def search_transactions_by_description(transactions: list, search_string: str) -> list:
     """
-    Фильтрует операции по статусу.
-    :param operations: Список операций.
-    :param status: Статус для фильтрации.
-    :return: Отфильтрованный список операций.
+    Ищет транзакции по описанию с использованием регулярных выражений.
+    :param transactions: Список словарей с транзакциями.
+    :param search_string: Строка для поиска.
+    :return: Список словарей с найденными транзакциями.
     """
+    pattern = re.compile(search_string, re.IGNORECASE)
     return [
-        op
-        for op in operations
-        if isinstance(op.get("state"), str)
-        and op.get("state", "").upper() == status.upper()
+        transaction
+        for transaction in transactions
+        if pattern.search(transaction.get("description", ""))
     ]
 
 
-def reorder_operations_by_date(
-    operations: List[Dict], descending: bool = False
-) -> List[Dict]:
+def count_transaction_categories(transactions: list, categories: list) -> dict:
     """
-    Сортирует операции по дате.
-    :param operations: Список операций.
-    :param descending: True, если сортировка по убыванию.
-    :return: Отсортированный список операций.
+    Подсчитывает количество операций по указанным категориям.
+    :param transactions: Список словарей с операциями.
+    :param categories: Список категорий для подсчета.
+    :return: Словарь с количеством операций по категориям.
     """
-    return sorted(operations, key=lambda x: x.get("date", ""), reverse=descending)
-
-
-def filter_rub_transactions(operations: List[Dict]) -> List[Dict]:
-    """
-    Фильтрует операции, в которых валюта — рубли (RUB).
-    :param operations: Список операций.
-    :return: Отфильтрованный список операций.
-    """
-    return [
-        op
-        for op in operations
-        if op.get("operationAmount", {}).get("currency", {}).get("code") == "RUB"
-    ]
+    descriptions = [transaction.get("description") for transaction in transactions]
+    counter = Counter(descriptions)
+    return {category: counter[category] for category in categories}
