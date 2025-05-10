@@ -1,29 +1,37 @@
-import re
 from collections import Counter
+from typing import List, Dict
 
-
-def search_transactions_by_description(transactions: list, search_string: str) -> list:
+def filter_operations_by_status(transactions: List[Dict], status: str = "EXECUTED") -> List[Dict]:
     """
-    Ищет транзакции по описанию с использованием регулярных выражений.
-    :param transactions: Список словарей с транзакциями.
-    :param search_string: Строка для поиска.
-    :return: Список словарей с найденными транзакциями.
+    Фильтрует операции по указанному статусу.
+    :param transactions: Список транзакций.
+    :param status: Статус для фильтрации (по умолчанию 'EXECUTED').
+    :return: Отфильтрованный список транзакций.
     """
-    pattern = re.compile(search_string, re.IGNORECASE)
-    return [
-        transaction
-        for transaction in transactions
-        if pattern.search(transaction.get("description", ""))
-    ]
+    return [t for t in transactions if t.get("state", "").upper() == status.upper()]
 
 
-def count_transaction_categories(transactions: list, categories: list) -> dict:
+def reorder_operations_by_date(transactions: List[Dict], descending: bool = True) -> List[Dict]:
     """
-    Подсчитывает количество операций по указанным категориям.
-    :param transactions: Список словарей с операциями.
+    Сортирует операции по дате.
+    :param transactions: Список транзакций.
+    :param descending: Порядок сортировки (по умолчанию убывание).
+    :return: Отсортированный список транзакций.
+    """
+    return sorted(
+        transactions,
+        key=lambda t: t.get("date", ""),
+        reverse=descending
+    )
+
+
+def count_transaction_categories(transactions: List[Dict], categories: List[str]) -> Dict[str, int]:
+    """
+    Подсчитывает количество операций по заданным категориям.
+    :param transactions: Список транзакций.
     :param categories: Список категорий для подсчета.
     :return: Словарь с количеством операций по категориям.
     """
-    descriptions = [transaction.get("description") for transaction in transactions]
+    descriptions = [t.get("description", "") for t in transactions]
     counter = Counter(descriptions)
     return {category: counter[category] for category in categories}

@@ -14,3 +14,5 @@ def test_main(mock_read_csv, mock_input):
         {"id": 2, "state": "PENDING", "description": "Перевод со счета на счет"},
     ]
     main()
+
+
