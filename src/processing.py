@@ -5,26 +5,30 @@ from dotenv import load_dotenv
 # Загружаем переменные окружения из .env
 load_dotenv()
 
-def convert_currency(amount: float, from_currency: str, to_currency: str) -> float:
+def convert_transaction_currency(transaction: dict) -> float:
     """
-    Конвертирует сумму из одной валюты в другую через внешнее API.
-    :param amount: Сумма для конвертации.
-    :param from_currency: Исходная валюта (например, 'USD').
-    :param to_currency: Целевая валюта (например, 'RUB').
-    :return: Сконвертированная сумма в целевой валюте.
+    Конвертирует сумму транзакции в RUB, если валюта не RUB.
+    :param transaction: Транзакция в виде словаря.
+    :return: Сумма в рублях (RUB).
     """
-    if from_currency == to_currency:
+    amount = float(transaction["operationAmount"]["amount"])
+    currency_code = transaction["operationAmount"]["currency"]["code"]
+
+    # Если валюта уже RUB, возвращаем сумму без изменений
+    if currency_code == "RUB":
         return amount
 
+    # Получаем API-ключ из переменных окружения
     api_key = getenv("API_KEY")
     if not api_key:
         raise ValueError("API_KEY не найден в переменных окружения.")
 
-    url = f"https://api.apilayer.com/exchangerates_data/convert"
+    # URL для конвертации валют через API
+    url = f"https://api.apilayer.com/exchangerates_data/convert "
     headers = {"apikey": api_key}
     params = {
-        "from": from_currency,
-        "to": to_currency,
+        "from": currency_code,
+        "to": "RUB",
         "amount": amount,
     }
 
@@ -32,6 +36,6 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> flo
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
         data = response.json()
-        return data.get("result", amount)
+        return data.get("result", amount)  # Возвращаем сконвертированную сумму
     except Exception as e:
         raise ValueError(f"Ошибка при конвертации валюты: {e}")

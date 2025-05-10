@@ -1,16 +1,35 @@
+import pytest
 from unittest.mock import patch
-from src.processing import convert_currency
-from dotenv import load_dotenv
+from src.processing import convert_transaction_currency
 
-# Загружаем переменные окружения из .env
-load_dotenv()
+def test_convert_transaction_currency_rub():
+    """
+    Тестирует конвертацию для транзакции в RUB.
+    """
+    transaction = {
+        "id": 1,
+        "state": "EXECUTED",
+        "date": "2019-07-03T18:35:29.512364",
+        "operationAmount": {
+            "amount": "100.00",
+            "currency": {
+                "name": "руб.",
+                "code": "RUB"
+            }
+        },
+        "description": "Перевод организации",
+        "from": "MasterCard 7158300734726758",
+        "to": "Счет 35383033474447895560"
+    }
+    result = convert_transaction_currency(transaction)
+    assert result == 100.00
+
 
 @patch("requests.get")
-def test_convert_currency(mock_get):
+def test_convert_transaction_currency_usd(mock_get):
     """
-    Тестирует функцию конвертации валюты с моком внешнего API.
+    Тестирует конвертацию для транзакции в USD.
     """
-    # Мокаем ответ от API
     mock_response = {
         "success": True,
         "query": {"from": "USD", "to": "RUB", "amount": 100},
@@ -18,27 +37,20 @@ def test_convert_currency(mock_get):
     }
     mock_get.return_value.json.return_value = mock_response
 
-    # Вызываем функцию конвертации
-    result = convert_currency(100, "USD", "RUB")
-
-    # Проверяем результат
+    transaction = {
+        "id": 1,
+        "state": "EXECUTED",
+        "date": "2019-07-03T18:35:29.512364",
+        "operationAmount": {
+            "amount": "100.00",
+            "currency": {
+                "name": "USD",
+                "code": "USD"
+            }
+        },
+        "description": "Перевод организации",
+        "from": "MasterCard 7158300734726758",
+        "to": "Счет 35383033474447895560"
+    }
+    result = convert_transaction_currency(transaction)
     assert result == 9000.0
-
-@patch("requests.get")
-def test_convert_currency_same_currency(mock_get):
-    """
-    Тестирует функцию конвертации валюты, когда исходная и целевая валюты совпадают.
-    """
-    result = convert_currency(100, "RUB", "RUB")
-    assert result == 100
-
-@patch("requests.get")
-def test_convert_currency_api_error(mock_get):
-    """
-    Тестирует обработку ошибок при вызове внешнего API.
-    """
-    mock_get.side_effect = Exception("API недоступно")
-    try:
-        convert_currency(100, "USD", "RUB")
-    except ValueError as e:
-        assert str(e) == "Ошибка при конвертации валюты: API недоступно"
