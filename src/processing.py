@@ -24,7 +24,7 @@ def convert_transaction_currency(transaction: dict) -> float:
         raise ValueError("API_KEY не найден в переменных окружения.")
 
     # URL для конвертации валют через API
-    url = f"https://api.apilayer.com/exchangerates_data/convert "
+    url = f"https://api.apilayer.com/exchangerates_data/convert"
     headers = {"apikey": api_key}
     params = {
         "from": currency_code,
